@@ -1,5 +1,6 @@
 import datetime
 import typing
+from math import ceil
 
 import numpy as np
 import torch
@@ -181,6 +182,8 @@ class APIMothClassifier(
         )
         torch.cuda.empty_cache()
 
+        len_dataset = len(self.dataloader)
+        num_batches_total = ceil(len_dataset / self.batch_size)
         for i, batch in enumerate(self.dataloader):
             if not batch:
                 logger.info(f"Batch {i+1} is empty, skipping")
@@ -189,7 +192,7 @@ class APIMothClassifier(
             item_ids, batch_input = batch
 
             logger.info(
-                f"Processing batch {i+1}, about {len(self.dataloader)} remaining"
+                f"Processing batch {i+1}, about {num_batches_total-i} batches remaining ({self.name})"
             )
 
             with StopWatch() as batch_time:
@@ -210,7 +213,7 @@ class APIMothClassifier(
                 batch_output,
                 seconds_per_item=seconds_per_item,
             )
-            logger.info(f"{self.name} Batch -- Done")
+            logger.info(f"{self.name} Batch {i+1} -- Done")
 
         logger.info(
             f"Finished {self.__class__.__name__} run. "
