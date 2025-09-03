@@ -135,7 +135,7 @@ class ImageQueue(QueueManager):
             .returning(TrapImage)
         )
         with get_session(self.db_path) as sesh:
-            images = sesh.execute(update_stmt).scalars().all()
+            images = sesh.execute(update_stmt).unique().scalars().all()
             sesh.commit()
             logger.info(f"Pulled {len(images)} images from queue")
             return images
