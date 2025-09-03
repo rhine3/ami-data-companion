@@ -71,6 +71,7 @@ class ImageQueue(QueueManager):
         )
 
     def queue_count(self) -> int:
+        logger.debug("Getting length of image queue")
         with get_session(self.db_path) as sesh:
             stmt = sa.select(sa.func.count(TrapImage.id)).where(
                 (TrapImage.id.in_(self.ids()) & (TrapImage.in_queue.is_(True)))
@@ -163,6 +164,7 @@ class DetectedObjectQueue(QueueManager):
         )
 
     def queue_count(self):
+        logger.debug("Getting length of detected object queue")
         with get_session(self.db_path) as sesh:
             stmt = sa.select(sa.func.count(DetectedObject.id)).where(
                 (
@@ -286,6 +288,7 @@ class UnclassifiedObjectQueue(QueueManager):
         )
 
     def queue_count(self) -> Union[int, None]:
+        logger.debug("Getting length of unclassified object queue")
         with get_session(self.db_path) as sesh:
             stmt = sa.select(sa.func.count(DetectedObject.id)).where(
                 (
@@ -409,6 +412,7 @@ class ObjectsWithoutFeaturesQueue(QueueManager):
         )
 
     def queue_count(self) -> int:
+        logger.debug("Getting length of objects without features queue")
         with get_session(self.db_path) as sesh:
             stmt = sa.select(sa.func.count(DetectedObject.id)).where(
                 (
@@ -532,6 +536,7 @@ class UntrackedObjectsQueue(QueueManager):
         )
 
     def queue_count(self) -> int:
+        logger.debug("Getting length of untracked objects queue")
         with get_session(self.db_path) as sesh:
             stmt = sa.select(sa.func.count(DetectedObject.id)).where(
                 (
@@ -719,6 +724,7 @@ def images_in_queue(db_path):
 
 
 def queue_counts(db_path):
+    logger.debug("Getting queue counts for database")
     counts = {}
     with get_session(db_path) as sesh:
         counts["images"] = sesh.query(TrapImage).filter_by(in_queue=True).count()
